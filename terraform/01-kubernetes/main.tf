@@ -4,7 +4,7 @@ module "kubernetes" {
   pools = [
     {
       type  = "g6-standard-1"
-      count = 2
+      count = 1
     }
   ]
 }
@@ -20,4 +20,10 @@ resource "kubernetes_namespace" "example" {
 
     name = "terraform-example-namespace"
   }
+}
+resource "helm_release" "ahoy" {
+  name       = "ahoy"
+  namespace  = kubernetes_namespace.example.id
+  repository = "https://helm.github.io/examples"
+  chart      = "hello-world"
 }
