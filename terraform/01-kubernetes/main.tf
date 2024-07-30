@@ -3,7 +3,7 @@ module "kubernetes" {
   environment = "prod"
   pools = [
     {
-      type = "g6-standard-1"
+      type  = "g6-standard-1"
       count = 2
     }
   ]

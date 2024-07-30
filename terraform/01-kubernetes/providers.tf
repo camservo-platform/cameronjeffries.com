@@ -12,7 +12,7 @@ provider "linode" {
 }
 resource "local_file" "kubeconfig" {
   content_base64 = module.kubernetes.kubernetes.kubeconfig
-  filename = "${path.module}/kubeconfig"
+  filename       = "${path.module}/kubeconfig"
 }
 provider "kubernetes" {
   config_path = "${path.module}/kubeconfig"
