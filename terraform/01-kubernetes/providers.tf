@@ -17,3 +17,8 @@ resource "local_file" "kubeconfig" {
 provider "kubernetes" {
   config_path = "${path.module}/kubeconfig"
 }
+provider "helm" {
+  kubernetes {
+    config_path = "${path.module}/kubeconfig"
+  }
+}
