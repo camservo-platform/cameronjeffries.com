@@ -30,5 +30,5 @@ variable "pools" {
 
 variable "environment" {
   description = "Name of environment.  (required)"
-  type = string
+  type        = string
 }

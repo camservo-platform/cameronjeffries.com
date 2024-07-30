@@ -1,4 +1,4 @@
 module "kubernetes" {
-  source = "./modules/kubernetes"
+  source      = "./modules/kubernetes"
   environment = "prod"
 }
