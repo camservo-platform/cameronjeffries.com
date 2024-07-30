@@ -10,3 +10,10 @@ terraform {
 provider "linode" {
   token = var.linode_api_key
 }
+resource "local_file" "kubeconfig" {
+  content_base64 = module.kubernetes.kubernetes.kubeconfig
+  filename = "${path.module}/kubeconfig"
+}
+provider "kubernetes" {
+  config_path = "${path.module}/kubeconfig"
+}
