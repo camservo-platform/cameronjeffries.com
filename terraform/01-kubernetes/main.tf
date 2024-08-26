@@ -8,3 +8,6 @@ module "kubernetes" {
     }
   ]
 }
+module "vault" {
+  source = "./modules/vault"
+}
