@@ -1,0 +1,31 @@
+server:
+  # ha:
+  #   enabled: false
+  #   replicas: 2
+  #   # config: |
+  #   #   ui = true
+  #   #   storage "consul" {
+  #   #     path = "vault"
+  #   #     address = "my-consul.mywebsite.com:8500"
+  #   #   }
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    hosts:
+    - backend:
+        port:
+          name: 80
+        service:
+          name: vault-ui
+      host: test-vault.fuckamazon.org
+      pathType: ImplementationSpecific
+      paths:
+      - /
+    ingressClassName: nginx
+    tls:
+    - secretName: nginx-test-vault-fuckamazon-org-tls
+      hosts:
+      - test-vault.fuckamazon.org
+ui:
+  enabled: true
