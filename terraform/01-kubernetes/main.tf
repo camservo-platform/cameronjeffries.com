@@ -11,3 +11,6 @@ module "kubernetes" {
 module "vault" {
   source = "./modules/vault"
 }
+module "argocd" {
+  source = "./modules/argocd"
+}
