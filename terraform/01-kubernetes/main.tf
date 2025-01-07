@@ -3,7 +3,7 @@ module "kubernetes" {
   environment = "prod"
   pools = [
     {
-      type  = "g6-standard-1"
+      type  = "g6-standard-2"
       count = 1
     }
   ]
@@ -13,4 +13,10 @@ module "vault" {
 }
 module "argocd" {
   source = "./modules/argocd"
+}
+module "keycloak" {
+  source = "./modules/keycloak"
+}
+module "monitoring" {
+  source = "./modules/monitoring"
 }
