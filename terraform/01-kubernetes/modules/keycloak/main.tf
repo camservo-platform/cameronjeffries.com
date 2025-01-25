@@ -8,6 +8,7 @@ resource "helm_release" "keycloak" {
   namespace  = kubernetes_namespace.keycloak.id
   repository = "oci://registry-1.docker.io/bitnamicharts"
   chart      = "keycloak"
+  version    = "24.3.2"
   set {
     name  = "ingress.hostname"
     value = var.hostname
