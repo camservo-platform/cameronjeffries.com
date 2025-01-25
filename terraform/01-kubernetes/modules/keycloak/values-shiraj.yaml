@@ -2,12 +2,10 @@ ingress:
   enabled: true
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-  hostname: keycloak.fuckamazon.org
   ingressClassName: nginx
   tls: true
 adminIngress:
   enabled: true
-  hostname: keycloak-admin.fuckamazon.org
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   ingressClassName: nginx
@@ -24,25 +22,4 @@ keycloakConfigCli:
         "attributes": {
           "frontendUrl": "https://keycloak-admin.fuckamazon.org"
         }
-      }
-    cameronjeffries-com.json: |
-      {
-        "realm" : "cameronjeffries-com"
-      }
-    # fuckamazon-org.json: |
-    #   {
-    #     "realm" : "fuckamazon-org.json"
-    #   }
-    users.json: |
-      {
-        "realm" : "users"
-      }
-    tuto.json: |
-      {
-        "realm" : "tuto"
-      }
-    test-realm-2: |
-      {
-        "realm" : "test-realm-2",
-        "enabled": true
       }

@@ -1,0 +1,46 @@
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  ingressClassName: nginx
+  tls: true
+adminIngress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  ingressClassName: nginx
+  tls: true
+keycloakConfigCli:
+  enabled: true
+  ## This is required until bitnami deploys a new helm chart with an updated default cli image. https://github.com/adorsys/keycloak-config-cli/issues/1220
+  image:
+    tag: 6.2.0-debian-12-r0
+  configuration:
+    master.json: |
+      {
+        "realm" : "master",
+        "attributes": {
+          "frontendUrl": "https://keycloak-admin.fuckamazon.org"
+        }
+      }
+    cameronjeffries-com.json: |
+      {
+        "realm" : "cameronjeffries-com"
+      }
+    # fuckamazon-org.json: |
+    #   {
+    #     "realm" : "fuckamazon-org.json"
+    #   }
+    users.json: |
+      {
+        "realm" : "users"
+      }
+    tuto.json: |
+      {
+        "realm" : "tuto"
+      }
+    test-realm-2: |
+      {
+        "realm" : "test-realm-2",
+        "enabled": true
+      }
