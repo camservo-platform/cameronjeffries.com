@@ -1,11 +1,13 @@
 ingress:
   enabled: true
+  hostname: keycloak-shiraj.fuckamazon.org
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   ingressClassName: nginx
   tls: true
 adminIngress:
   enabled: true
+  hostname: keycloak-admin-shiraj.fuckamazon.org
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   ingressClassName: nginx
@@ -20,6 +22,6 @@ keycloakConfigCli:
       {
         "realm" : "master",
         "attributes": {
-          "frontendUrl": "https://keycloak-admin.fuckamazon.org"
+          "frontendUrl": "https://keycloak-admin-shiraj.fuckamazon.org"
         }
       }

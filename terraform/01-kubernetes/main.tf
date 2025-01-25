@@ -15,16 +15,12 @@ module "argocd" {
   source = "./modules/argocd"
 }
 module "keycloak" {
-  source         = "./modules/keycloak"
-  hostname       = "keycloak.fuckamazon.org"
-  admin_hostname = "keycloak-admin.fuckamazon.org"
+  source = "./modules/keycloak"
 }
 module "keycloak_shiraj" {
-  source         = "./modules/keycloak"
-  hostname       = "keycloak-shiraj.fuckamazon.org"
-  admin_hostname = "keycloak-admin-shiraj.fuckamazon.org"
-  namespace      = "keycloak-shiraj"
-  environment    = "shiraj"
+  source      = "./modules/keycloak"
+  namespace   = "keycloak-shiraj"
+  environment = "shiraj"
 }
 module "monitoring" {
   source = "./modules/monitoring"

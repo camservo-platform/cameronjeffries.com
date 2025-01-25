@@ -1,11 +1,13 @@
 ingress:
   enabled: true
+  hostname: keycloak.fuckamazon.org
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   ingressClassName: nginx
   tls: true
 adminIngress:
   enabled: true
+  hostname: keycloak-admin.fuckamazon.org
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   ingressClassName: nginx
