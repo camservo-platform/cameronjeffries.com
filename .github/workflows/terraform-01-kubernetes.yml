@@ -22,8 +22,8 @@ jobs:
     defaults:
       run:
         working-directory: ${{ env.TERRAFORM_PATH }}
-    permissions:
-      pull-requests: write
+    # permissions:
+    #   pull-requests: write
     name: Terraform plan
     runs-on: ubuntu-20.04
     steps:
