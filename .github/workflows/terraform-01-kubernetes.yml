@@ -55,7 +55,7 @@ jobs:
 
       - name: OpenTofu Plan
         id: plan
-        run: tofu plan -no-color
+        run: tofu plan -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -no-color
         continue-on-error: true
 
       - uses: actions/github-script@v6
