@@ -61,7 +61,7 @@ jobs:
         shell: bash
 
       - name: Upload Plan Output
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tofu-plan
           path: ${{ env.TERRAFORM_PATH }}/plan.out
