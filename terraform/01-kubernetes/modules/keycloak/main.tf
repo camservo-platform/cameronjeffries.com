@@ -1,6 +1,6 @@
 resource "kubernetes_namespace" "keycloak" {
   metadata {
-    name = "keycloak"
+    name = var.namespace
   }
 }
 resource "helm_release" "keycloak" {
@@ -8,7 +8,8 @@ resource "helm_release" "keycloak" {
   namespace  = kubernetes_namespace.keycloak.id
   repository = "oci://registry-1.docker.io/bitnamicharts"
   chart      = "keycloak"
+  version    = "24.3.2"
   values = [
-    file("${path.module}/values.yaml")
+    file("${path.module}/values-${var.environment}.yaml")
   ]
 }

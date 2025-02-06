@@ -1,0 +1,40 @@
+## NOTES!!!
+ingress:
+  enabled: true
+  hostname: keycloak-shiraj.fuckamazon.org
+  ## This annotation allows a service running in kubernetes called "cert-manager" to provision certificates.
+  ## It scans periodically (like every minute I think) for this annotation, and if found it will use the "hostname" param
+  ## to issue a certificate via "letsencrypt".  For more info, see https://github.com/camservo-org/cameronjeffries.com/tree/main/helm/cert-manager.
+  ## And https://cert-manager.io/docs/installation/helm/
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  ## This class name tells kubernetes to create an ingress with class "nginx".  The nginx ingress controller was installed with helm
+  ## https://github.com/camservo-org/cameronjeffries.com/tree/main/helm/nginx
+  ## https://github.com/kubernetes/ingress-nginx
+  ## To make it super confusing, there's both an ingress-nginx and nginx-ingress helm chart.  One is the community one and one is
+  ## the near unusable nginx provided one.
+  ingressClassName: nginx
+  tls: true
+adminIngress:
+  enabled: true
+  hostname: keycloak-admin-shiraj.fuckamazon.org
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  ingressClassName: nginx
+  tls: true
+keycloakConfigCli:
+  enabled: true
+  ## This is required until bitnami deploys a new helm chart with an updated default cli image. https://github.com/adorsys/keycloak-config-cli/issues/1220
+  image:
+    tag: 6.2.0-debian-12-r0
+  ## This configuration creates the master realm which you use to create other realms and holds the admin user.
+  ## I don't like this format for actually configuring keycloak.  In the past I've used https://github.com/keycloak/terraform-provider-keycloak
+  ## Once I figure out the configuration I'd like, I'll probably add that in again.
+  configuration:
+    master.json: |
+      {
+        "realm" : "master",
+        "attributes": {
+          "frontendUrl": "https://keycloak-admin-shiraj.fuckamazon.org"
+        }
+      }

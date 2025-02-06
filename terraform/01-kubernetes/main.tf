@@ -4,7 +4,7 @@ module "kubernetes" {
   pools = [
     {
       type  = "g6-standard-2"
-      count = 1
+      count = 2
     }
   ]
 }
@@ -16,6 +16,11 @@ module "argocd" {
 }
 module "keycloak" {
   source = "./modules/keycloak"
+}
+module "keycloak_shiraj" {
+  source      = "./modules/keycloak"
+  namespace   = "keycloak-shiraj"
+  environment = "shiraj"
 }
 module "monitoring" {
   source = "./modules/monitoring"

@@ -13,8 +13,8 @@ resource "helm_release" "monitoring" {
   ]
 }
 resource "helm_release" "grafana" {
-    name = "grafana"
-    namespace = kubernetes_namespace.monitoring.id
-    repository = "https://grafana.github.io/helm-charts"
-    chart = "grafana"
+  name       = "grafana"
+  namespace  = kubernetes_namespace.monitoring.id
+  repository = "https://grafana.github.io/helm-charts"
+  chart      = "grafana"
 }
