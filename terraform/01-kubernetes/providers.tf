@@ -6,10 +6,10 @@ terraform {
     }
   }
   backend "s3" {
-    endpoint                    = "us-lax-1.linodeobjects.com"
-    # endpoints = {
-    #   s3 = "us-lax-1.linodeobjects.com"
-    # }
+    # endpoint                    = "us-lax-1.linodeobjects.com"
+    endpoints = {
+      s3 = "us-lax-1.linodeobjects.com"
+    }
     skip_requesting_account_id  = true
     skip_credentials_validation = true
     bucket                      = "cameronjeffries.com.states"
