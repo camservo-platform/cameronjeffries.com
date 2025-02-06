@@ -125,5 +125,9 @@ jobs:
       - name: OpenTofu Init
         run: tofu init
 
+      - name: Create kubeconfig file
+        id: create-kubeconfig
+        run: tofu apply -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -target local_file.kubeconfig -auto-approve
+
       - name: OpenTofu Apply
         run: tofu apply -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -auto-approve
