@@ -2,60 +2,125 @@ name: Terraform
 
 on:
   workflow_dispatch:
+    inputs:
+      apply:
+        description: "Apply OpenTofu changes"
+        required: false
+        default: "false"
   push:
     branches: [main]
     paths: ["terraform/01-kubernetes/**"]
-
   pull_request:
     branches: [main]
     paths: ["terraform/01-kubernetes/**"]
 
 env:
   TERRAFORM_PATH: terraform/01-kubernetes
+  TOFU_VERSION: 1.7
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   plan:
+    defaults:
+      run:
+        working-directory: ${{ env.TERRAFORM_PATH }}
+    permissions:
+      pull-requests: write
+      contents: read
     name: Terraform plan
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js 14.x
-        uses: actions/setup-node@v1
+      - uses: opentofu/setup-opentofu@v1
         with:
-          node-version: 14.x
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
-      - name: Initialise project and view terraform plan
-        run: |
-          cd ${{ env.TERRAFORM_PATH }} 
-          terraform init 
-          terraform plan -var='linode_api_key=${{ secrets.LINODE_API_KEY }}'
+          tofu_version: ${{ env.TOFU_VERSION }}
+      
+      - name: OpenTofu fmt
+        id: fmt
+        run: tofu fmt -check
+        continue-on-error: true
 
-#   deploy:
-#     name: Terraform Deploy
-#     needs: plan
-#     if: github.ref == 'refs/heads/main'
-#     runs-on: ubuntu-20.04
-#     steps:
-#       - uses: actions/checkout@v3
-#       - name: Use Node.js 14.x
-#         uses: actions/setup-node@v1
-#         with:
-#           node-version: 14.x
-#       - name: Configure AWS credentials
-#         uses: aws-actions/configure-aws-credentials@v2
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           aws-region: eu-west-2
-#       - name: Initialise project and deploy terraform
-#         run: |
-#           cd terraform
-#           cd qa
-#           terraform fmt
-#           terraform init
-#           terraform apply -var='example_api_key=${{ secrets.EXAMPLE_API_KEY }}'
+      - name: OpenTofu Init
+        id: init
+        run: tofu init
+
+      - name: Create kubeconfig file
+        id: create-kubeconfig
+        run: tofu apply -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -target local_file.kubeconfig -auto-approve
+
+      - name: OpenTofu Validate
+        id: validate
+        run: tofu validate -no-color
+
+      - name: OpenTofu Plan
+        id: plan
+        run: |
+          tofu plan -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -no-color | tee plan.out
+        continue-on-error: true
+        shell: bash
+
+      - name: Upload Plan Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: tofu-plan
+          path: ${{ env.TERRAFORM_PATH }}/plan.out
+
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "tofu\n$(cat ${{ env.TERRAFORM_PATH }}/plan.out)"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### OpenTofu Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### OpenTofu Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### OpenTofu Validation 🤖\`${{ steps.validate.outcome }}\`
+            <details><summary>Validation Output</summary>
+
+            \`\`\`
+            ${{ steps.validate.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            #### OpenTofu Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+  apply:
+    needs: plan
+    defaults:
+      run:
+        working-directory: ${{ env.TERRAFORM_PATH }}
+    permissions:
+      contents: read
+    name: Terraform apply
+    runs-on: ubuntu-20.04
+    if: github.event_name == 'push' || github.event.inputs.apply == 'true'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+
+      - name: OpenTofu Init
+        run: tofu init
+
+      - name: OpenTofu Apply
+        run: tofu apply -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -auto-approve
