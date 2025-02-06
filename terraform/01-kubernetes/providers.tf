@@ -5,6 +5,13 @@ terraform {
       version = "2.7.1"
     }
   }
+  backend "s3" {
+    endpoint                    = "us-lax-1.linodeobjects.com"
+    skip_credentials_validation = true
+    bucket                      = "cameronjeffries.com.states"
+    key                         = "infra/state.json"
+    region                      = "us-west-1"
+  }
 }
 //Use the Linode Provider
 provider "linode" {
