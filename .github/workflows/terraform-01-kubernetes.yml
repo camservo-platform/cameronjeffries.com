@@ -44,7 +44,8 @@ jobs:
         run: |
           cd ${{ env.TERRAFORM_PATH }} 
           tofu init 
-          tofu plan -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -var='aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}' -var='aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+          tofu apply -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -target local_file.kubeconfig
+          tofu plan -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' 
 
 #   deploy:
 #     name: Terraform Deploy
