@@ -12,10 +12,10 @@ on:
         default: "false"
   push:
     branches: [main]
-    paths: ["terraform/01-kubernetes/**"]
+    paths: [".github/**", "terraform/01-kubernetes/**"]
   pull_request:
     branches: [main]
-    paths: ["terraform/01-kubernetes/**"]
+    paths: [".github/**", "terraform/01-kubernetes/**"]
 
 env:
   TERRAFORM_PATH: terraform/01-kubernetes
