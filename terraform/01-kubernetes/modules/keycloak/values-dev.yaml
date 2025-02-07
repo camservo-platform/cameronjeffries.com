@@ -25,24 +25,15 @@ keycloakConfigCli:
           "frontendUrl": "https://keycloak-admin.fuckamazon.org"
         }
       }
+    camservo.json: |
+      {
+        "realm" : "camservo",
+      }
     cameronjeffries-com.json: |
       {
         "realm" : "cameronjeffries-com"
       }
-    # fuckamazon-org.json: |
-    #   {
-    #     "realm" : "fuckamazon-org.json"
-    #   }
-    users.json: |
+    fuckamazon-org.json: |
       {
-        "realm" : "users"
-      }
-    tuto.json: |
-      {
-        "realm" : "tuto"
-      }
-    test-realm-2: |
-      {
-        "realm" : "test-realm-2",
-        "enabled": true
+        "realm" : "fuckamazon-org"
       }
