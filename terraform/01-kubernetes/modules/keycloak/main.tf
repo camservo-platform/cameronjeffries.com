@@ -25,7 +25,7 @@ resource "helm_release" "keycloak" {
     name  = "auth.adminUser"
     value = local.user
   }
-  set {
+  set_sensitive {
     name  = "auth.adminPassword"
     value = local.pass
   }

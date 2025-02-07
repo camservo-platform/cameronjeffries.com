@@ -4,6 +4,10 @@ terraform {
       source  = "linode/linode"
       version = "2.7.1"
     }
+    github = {
+      source = "integrations/github"
+      version = "~> 6.0"
+    }
   }
   backend "s3" {
     # endpoint                    = "us-lax-1.linodeobjects.com"
@@ -23,6 +27,9 @@ terraform {
 //Use the Linode Provider
 provider "linode" {
   token = var.linode_api_key
+}
+provider "github" {
+  token = var.github_token
 }
 resource "local_file" "kubeconfig" {
   content_base64 = module.kubernetes.kubernetes.kubeconfig
