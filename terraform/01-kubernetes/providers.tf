@@ -28,9 +28,9 @@ terraform {
 provider "linode" {
   token = var.linode_api_key
 }
-provider "github" {
-  token = var.github_token
-}
+# provider "github" {
+#   token = var.github_token
+# }
 resource "local_file" "kubeconfig" {
   content_base64 = module.kubernetes.kubernetes.kubeconfig
   filename       = "${path.module}/kubeconfig"
