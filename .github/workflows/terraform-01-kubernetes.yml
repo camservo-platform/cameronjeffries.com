@@ -92,7 +92,7 @@ jobs:
             <details><summary>Show Plan</summary>
 
             \`\`\`
-            ${process.env.PLAN}
+            tofu\n$(cat ${{ env.TERRAFORM_PATH }}/plan.out)
             \`\`\`
 
             </details>
