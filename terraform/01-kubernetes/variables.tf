@@ -4,3 +4,6 @@ variable "linode_api_key" {
 # variable "github_token" {
 #   type = string
 # }
+variable "keycloak_secret" {
+  type = string
+}

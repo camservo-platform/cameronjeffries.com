@@ -12,7 +12,8 @@ module "vault" {
   source = "./modules/vault"
 }
 module "argocd" {
-  source = "./modules/argocd"
+  source          = "./modules/argocd"
+  keycloak_secret = var.keycloak_secret
 }
 module "keycloak" {
   source = "./modules/keycloak"
