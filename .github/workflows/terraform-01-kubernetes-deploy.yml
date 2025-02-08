@@ -1,0 +1,51 @@
+name: Terraform Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  release:
+    types:
+      - published
+
+env: 
+  TERRAFORM_PATH: terraform/01-kubernetes
+  TOFU_VERSION: 1.7
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ENVIRONMENT: prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      ## TODO: Get the repo name from an environment config.
+      - name: Checkout actions repository
+        uses: actions/checkout@v4
+        with:
+          repository: camservo-org/github-actions
+          ref: dev
+
+      - name: Install the Linode CLI
+        uses: linode/action-linode-cli@v1
+        with:
+          token: ${{ secrets.LINODE_API_KEY }}
+
+      - name: Generate the kubeconfig file
+        run: |
+          linode-cli lke kubeconfig-view 201873 --json | jq -r '.[0].kubeconfig' | base64 --decode > "${{ env.TERRAFORM_PATH }}/kubeconfig"
+
+      - name: Run Terraform Deployment
+        uses: ./github-actions/pipelines/terraform-action
+        with:
+          environment: ${{ env.ENVIRONMENT }}
+          working_dir: ${{ env.TERRAFORM_PATH }}
+          tf_vars: |
+            {
+              "linode_api_key": "${{ secrets.LINODE_API_KEY }}",
+              "keycloak_secret": "${{ secrets.KEYCLOAK_SECRET }}"
+            }
