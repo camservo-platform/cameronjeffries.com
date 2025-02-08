@@ -4,6 +4,16 @@ global:
 configs:
   params:
     server.insecure: true
+  cm:
+    # -- Create the argocd-cm configmap for [declarative setup]
+    create: true
+    ## TODO: Update to use PKCE.
+    oidc.config: |
+      name: Keycloak
+      issuer: https://keycloak.fuckamazon.org/realms/camservo
+      clientID: argocd
+      clientSecret: $oidc.keycloak.clientSecret
+      requestedScopes: ['openid', 'profile', 'email', 'groups']
 
 server:
   ingress:
