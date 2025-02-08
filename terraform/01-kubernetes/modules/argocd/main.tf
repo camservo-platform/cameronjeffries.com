@@ -14,4 +14,14 @@ resource "helm_release" "argocd" {
   values = [
     file("${path.module}/values.yaml")
   ]
+  set_sensitive {
+    name = "server.config.oidc.config"
+    value = <<EOT
+      name: Keycloak
+      issuer: http://keycloak.fuckamazon.org/auth/realms/camservo
+      clientID: argocd
+      clientSecret: ${var.keycloak_secret}
+      requestedScopes: ['openid', 'profile', 'email', 'groups']
+    EOT
+  }
 }
