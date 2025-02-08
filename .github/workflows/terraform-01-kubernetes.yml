@@ -8,12 +8,8 @@ on:
     inputs:
       apply:
         description: "Apply OpenTofu changes"
-        type: choice
-        options:
-          - true
-          - false
+        type: boolean
         required: false
-        default: "false"
   push:
     branches: [main]
     paths: ["terraform/01-kubernetes/**"]
