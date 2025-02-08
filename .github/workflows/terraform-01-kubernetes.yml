@@ -8,6 +8,10 @@ on:
     inputs:
       apply:
         description: "Apply OpenTofu changes"
+        type: choice
+        options:
+          - true
+          - false
         required: false
         default: "false"
   push:
