@@ -3,7 +3,11 @@ global:
 
 configs:
   params:
+    # This looks bad, but it's just here because SSL termination is done at the ingress.
     server.insecure: true
+  rbac:
+    policy.csv: |
+      g, ArgoCDAdmins, role:admin
   cm:
     # -- Create the argocd-cm configmap for [declarative setup]
     create: true
@@ -12,7 +16,7 @@ configs:
       name: Keycloak
       issuer: https://keycloak.fuckamazon.org/realms/camservo
       clientID: argocd
-      clientSecret: $oidc.keycloak.clientSecret
+      enablePKCEAuthentication: true
       requestedScopes: ['openid', 'profile', 'email', 'groups']
 
 server:
