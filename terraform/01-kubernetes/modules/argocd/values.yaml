@@ -5,28 +5,18 @@ configs:
   params:
     # This looks bad, but it's just here because SSL termination is done at the ingress.
     server.insecure: true
-<<<<<<< HEAD
   rbac:
     policy.csv: |
-      policy.csv: |
-        g, ArgoCDAdmins, role:admin
-=======
->>>>>>> main
+      g, ArgoCDAdmins, role:admin
   cm:
     # -- Create the argocd-cm configmap for [declarative setup]
     create: true
     ## TODO: Update to use PKCE.
     oidc.config: |
       name: Keycloak
-<<<<<<< HEAD
       issuer: https://keycloak.fuckamazon.org/realms/fuckamazon-org
       clientID: argocd
       enablePKCEAuthentication: true
-=======
-      issuer: https://keycloak.fuckamazon.org/realms/camservo
-      clientID: argocd
-      clientSecret: $oidc.keycloak.clientSecret
->>>>>>> main
       requestedScopes: ['openid', 'profile', 'email', 'groups']
 
 server:
