@@ -1,3 +1,6 @@
+## Keycloak installation pointed out a circular depndency chain that needs to be addressed.
+## This should be removed and deployed separately in it's own repository.
+
 resource "kubernetes_namespace" "argocd" {
   metadata {
     name = "argocd"

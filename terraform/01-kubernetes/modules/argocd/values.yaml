@@ -17,3 +17,7 @@ server:
         - argo.fuckamazon.org
         # Based on the ingress controller used secret might be optional
         secretName: argo-fuckamazon-org-tls
+  rbacConfig:
+    policy.default: role:readonly
+    policy.csv: |
+      g, argocd-admin, role:admin
