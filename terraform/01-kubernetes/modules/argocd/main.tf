@@ -13,7 +13,7 @@ resource "helm_release" "argocd" {
   chart      = "argo-cd"
   values = [
     templatefile(
-      "${path.module}/templates/values.yaml",
+      "${path.module}/templates/values.yaml.tpl",
       {
         "keycloak_secret" = var.keycloak_secret
       }
