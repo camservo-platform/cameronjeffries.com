@@ -10,7 +10,7 @@ configs:
 
     oidc.config: |
       name: Keycloak
-      issuer: http://keycloak.kind.cluster/auth/realms/camservo
+      issuer: https://keycloak.fuckamazon.org/auth/realms/camservo
       clientID: argocd
       clientSecret: $oidc.keycloak.clientSecret
       requestedScopes: ['openid', 'profile', 'email', 'groups']
