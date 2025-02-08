@@ -4,6 +4,17 @@ global:
 configs:
   params:
     server.insecure: true
+  cm:
+    # -- Create the argocd-cm configmap for [declarative setup]
+    create: true
+
+    # OIDC configuration as an alternative to dex (optional).
+    oidc.config: |
+      name: Keycloak
+      issuer: http://keycloak.kind.cluster/auth/realms/master
+      clientID: argocd
+      clientSecret: {{ keycloak_secret }}
+      requestedScopes: ['openid', 'profile', 'email', 'groups']
 
 server:
   ingress:
@@ -17,13 +28,3 @@ server:
         - argo.fuckamazon.org
         # Based on the ingress controller used secret might be optional
         secretName: argo-fuckamazon-org-tls
-  rbac:
-    policy.default: role:readonly
-    policy.csv: |
-      g, argocd-admin, role:admin
-    oidc.config: |
-      name: Keycloak
-      issuer: http://keycloak.kind.cluster/auth/realms/master
-      clientID: argocd
-      clientSecret: $CLIENT_SECRET
-      requestedScopes: ['openid', 'profile', 'email', 'groups']
