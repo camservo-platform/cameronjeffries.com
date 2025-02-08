@@ -14,7 +14,7 @@ configs:
     ## TODO: Update to use PKCE.
     oidc.config: |
       name: Keycloak
-      issuer: https://keycloak.fuckamazon.org/realms/fuckamazon-org
+      issuer: https://keycloak.fuckamazon.org/realms/camservo
       clientID: argocd
       enablePKCEAuthentication: true
       requestedScopes: ['openid', 'profile', 'email', 'groups']
