@@ -12,12 +12,13 @@ resource "helm_release" "argocd" {
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
   values = [
-    templatefile(
-      "${path.module}/templates/values.yaml.tpl",
-      {
-        "keycloak_secret" = var.keycloak_secret
-      }
-    )
+    file("${path.module}/values.yaml")
+    # templatefile(
+    #   "${path.module}/templates/values.yaml.tpl",
+    #   {
+    #     "keycloak_secret" = var.keycloak_secret
+    #   }
+    # )
   ]
   
 }

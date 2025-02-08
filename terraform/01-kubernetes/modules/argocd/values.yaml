@@ -4,6 +4,16 @@ global:
 configs:
   params:
     server.insecure: true
+  cm:
+    # -- Create the argocd-cm configmap for [declarative setup]
+    create: true
+
+    oidc.config: |
+      name: Keycloak
+      issuer: http://keycloak.kind.cluster/auth/realms/camservo
+      clientID: argocd
+      clientSecret: $oidc.keycloak.clientSecret
+      requestedScopes: ['openid', 'profile', 'email', 'groups']
 
 server:
   ingress:
