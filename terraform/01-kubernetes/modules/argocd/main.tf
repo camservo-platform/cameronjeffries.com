@@ -11,14 +11,9 @@ resource "helm_release" "argocd" {
   namespace  = kubernetes_namespace.argocd.id
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
+  ## TODO: Voodoo secret implementation.  It works right now, but I don't know why.
   values = [
     file("${path.module}/values.yaml")
-    # templatefile(
-    #   "${path.module}/templates/values.yaml.tpl",
-    #   {
-    #     "keycloak_secret" = var.keycloak_secret
-    #   }
-    # )
   ]
   
 }
