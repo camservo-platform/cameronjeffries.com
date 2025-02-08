@@ -12,16 +12,12 @@ resource "helm_release" "argocd" {
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
   values = [
-    file("${path.module}/values.yaml")
+    templatefile(
+      "${path.module}/templates/values.yaml",
+      {
+        "keycloak_secret" = var.keycloak_secret
+      }
+    )
   ]
-  set_sensitive {
-    name = "server.config.oidc.config"
-    value = <<EOT
-      name: Keycloak
-      issuer: http://keycloak.fuckamazon.org/auth/realms/camservo
-      clientID: argocd
-      clientSecret: ${var.keycloak_secret}
-      requestedScopes: ['openid', 'profile', 'email', 'groups']
-    EOT
-  }
+  
 }

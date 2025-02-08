@@ -25,5 +25,5 @@ server:
       name: Keycloak
       issuer: http://keycloak.kind.cluster/auth/realms/master
       clientID: argocd
-      clientSecret: {{ CLIENT_SECRET }}
+      clientSecret: $CLIENT_SECRET
       requestedScopes: ['openid', 'profile', 'email', 'groups']
