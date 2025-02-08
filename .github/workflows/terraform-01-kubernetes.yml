@@ -50,7 +50,7 @@ jobs:
 
       - name: Create kubeconfig file
         id: create-kubeconfig
-        run: tofu apply -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -target local_file.kubeconfig -auto-approve
+        run: tofu apply -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -var='keycloak_secret=${{ secrets.KEYCLOAK_SECRET }}' -target local_file.kubeconfig -auto-approve
 
       - name: OpenTofu Validate
         id: validate
@@ -59,7 +59,7 @@ jobs:
       - name: OpenTofu Plan
         id: plan
         run: |
-          tofu plan -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -no-color | tee plan.out
+          tofu plan -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -var='keycloak_secret=${{ secrets.KEYCLOAK_SECRET }}' -no-color | tee plan.out
         continue-on-error: true
         shell: bash
 
@@ -127,7 +127,7 @@ jobs:
 
       - name: Create kubeconfig file
         id: create-kubeconfig
-        run: tofu apply -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -target local_file.kubeconfig -auto-approve
+        run: tofu apply -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -var='keycloak_secret=${{ secrets.KEYCLOAK_SECRET }}' -target local_file.kubeconfig -auto-approve
 
       - name: OpenTofu Apply
-        run: tofu apply -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -auto-approve
+        run: tofu apply -var='linode_api_key=${{ secrets.LINODE_API_KEY }}' -var='keycloak_secret=${{ secrets.KEYCLOAK_SECRET }}' -auto-approve
