@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - dev
   release:
     types:
       - published
@@ -22,8 +21,6 @@ on:
         options:
           - dev
           - prod
-        default: false
-        type: boolean
 
 env: 
   TERRAFORM_PATH: terraform/01-kubernetes
