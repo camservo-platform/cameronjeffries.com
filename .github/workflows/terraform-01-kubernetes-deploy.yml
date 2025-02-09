@@ -1,0 +1,73 @@
+name: Terraform Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Apply Terraform changes?"
+        required: false
+        default: false
+        type: boolean
+
+env: 
+  TERRAFORM_PATH: terraform/01-kubernetes
+  TOFU_VERSION: 1.7
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ENVIRONMENT: prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      ## TODO: Get the repo name from an environment config.
+      - name: Checkout actions repository
+        uses: actions/checkout@v4
+        with:
+          repository: camservo-org/github-actions
+          ref: dev
+          token: ${{ secrets.GHA_TOKEN }}
+          persist-credentials: false
+          path: github-actions
+
+      - name: Install the Linode CLI
+        uses: linode/action-linode-cli@v1
+        with:
+          token: ${{ secrets.LINODE_API_KEY }}
+
+      ## Kubernetes provider will complain if this isn't present already.
+      - name: Generate the kubeconfig file
+        run: |
+          touch "${{ env.TERRAFORM_PATH }}/kubeconfig"
+          linode-cli lke kubeconfig-view 201873 --json | jq -r '.[0].kubeconfig' | base64 --decode > "${{ env.TERRAFORM_PATH }}/kubeconfig"
+
+      - name: Set Apply Flag
+        run: |
+          APPLY_FLAG="false"
+          if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.event.inputs.apply }}" == "true" ]]; then
+            APPLY_FLAG="true"
+          fi
+          echo "APPLY=${APPLY_FLAG}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Run Terraform Deployment
+        uses: ./github-actions/actions/terraform
+        with:
+          environment: ${{ env.ENVIRONMENT }}
+          working_dir: ${{ env.TERRAFORM_PATH }}
+          apply: ${{ env.APPLY }}
+          tf_vars: |
+            {
+              "linode_api_key": "${{ secrets.LINODE_API_KEY }}",
+              "keycloak_secret": "${{ secrets.KEYCLOAK_SECRET }}"
+            }
