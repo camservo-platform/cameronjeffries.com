@@ -4,24 +4,32 @@ on:
   push:
     branches:
       - main
-      - dev
   release:
     types:
       - published
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       apply:
         description: "Apply Terraform changes?"
         required: false
-        default: false
+        default: "false"
         type: boolean
+      environment:
+        description: "Select deployment environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
 
 env: 
   TERRAFORM_PATH: terraform/01-kubernetes
   TOFU_VERSION: 1.7
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  ENVIRONMENT: prod
 
 jobs:
   deploy:
@@ -51,13 +59,28 @@ jobs:
           touch "${{ env.TERRAFORM_PATH }}/kubeconfig"
           linode-cli lke kubeconfig-view 201873 --json | jq -r '.[0].kubeconfig' | base64 --decode > "${{ env.TERRAFORM_PATH }}/kubeconfig"
 
-      - name: Set Apply Flag
+      - name: Set Apply Flag and Environment
         run: |
+          # Default apply flag to false
           APPLY_FLAG="false"
-          if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.event.inputs.apply }}" == "true" ]]; then
+
+          # Determine environment and apply behavior
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            ENVIRONMENT="prod"
             APPLY_FLAG="true"
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            ENVIRONMENT="dev"
+            APPLY_FLAG="true"  # Push to main should apply dev
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            ENVIRONMENT="dev"
+            APPLY_FLAG="false"  # Merge requests should not apply
+          else
+            ENVIRONMENT="${{ github.event.inputs.environment }}"
+            APPLY_FLAG="${{ github.event.inputs.apply }}"
           fi
+
           echo "APPLY=${APPLY_FLAG}" >> $GITHUB_ENV
+          echo "ENVIRONMENT=${ENVIRONMENT}" >> $GITHUB_ENV
         shell: bash
 
       - name: Run Terraform Deployment
