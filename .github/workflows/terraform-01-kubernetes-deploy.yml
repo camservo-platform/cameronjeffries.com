@@ -58,19 +58,16 @@ jobs:
 
       - name: Set Apply Flag and Environment
         run: |
-          # Determine the apply flag
-          APPLY_FLAG="false"
-          if [[ "${{ github.event_name }}" == "release" || "${{ github.event.inputs.apply }}" == "true" ]]; then
-            APPLY_FLAG="true"
-          fi
-
           # Determine the environment
           if [[ "${{ github.event_name }}" == "release" ]]; then
             ENVIRONMENT="prod"
+            APPLY_FLAG="true"
           elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
             ENVIRONMENT="dev"
+            APPLY_FLAG="true"  # Push to main should apply dev
           else
             ENVIRONMENT="${{ github.event.inputs.environment }}"
+            APPLY_FLAG="${{ github.event.inputs.apply }}"
           fi
 
           echo "APPLY=${APPLY_FLAG}" >> $GITHUB_ENV
