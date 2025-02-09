@@ -38,9 +38,9 @@ jobs:
         with:
           token: ${{ secrets.LINODE_API_KEY }}
 
+        ## Kubernetes provider will complain if this isn't present already.
       - name: Generate the kubeconfig file
         run: |
-          find "github-actions"
           touch "${{ env.TERRAFORM_PATH }}/kubeconfig"
           linode-cli lke kubeconfig-view 201873 --json | jq -r '.[0].kubeconfig' | base64 --decode > "${{ env.TERRAFORM_PATH }}/kubeconfig"
 
