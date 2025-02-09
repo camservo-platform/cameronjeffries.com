@@ -8,6 +8,13 @@ on:
   release:
     types:
       - published
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Apply Terraform changes?"
+        required: false
+        default: false
+        type: boolean
 
 env: 
   TERRAFORM_PATH: terraform/01-kubernetes
@@ -38,17 +45,27 @@ jobs:
         with:
           token: ${{ secrets.LINODE_API_KEY }}
 
-        ## Kubernetes provider will complain if this isn't present already.
+      ## Kubernetes provider will complain if this isn't present already.
       - name: Generate the kubeconfig file
         run: |
           touch "${{ env.TERRAFORM_PATH }}/kubeconfig"
           linode-cli lke kubeconfig-view 201873 --json | jq -r '.[0].kubeconfig' | base64 --decode > "${{ env.TERRAFORM_PATH }}/kubeconfig"
+
+      - name: Set Apply Flag
+        run: |
+          APPLY_FLAG="false"
+          if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.event.inputs.apply }}" == "true" ]]; then
+            APPLY_FLAG="true"
+          fi
+          echo "APPLY=${APPLY_FLAG}" >> $GITHUB_ENV
+        shell: bash
 
       - name: Run Terraform Deployment
         uses: ./github-actions/actions/terraform
         with:
           environment: ${{ env.ENVIRONMENT }}
           working_dir: ${{ env.TERRAFORM_PATH }}
+          apply: ${{ env.APPLY }}
           tf_vars: |
             {
               "linode_api_key": "${{ secrets.LINODE_API_KEY }}",
