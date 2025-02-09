@@ -45,7 +45,7 @@ jobs:
           linode-cli lke kubeconfig-view 201873 --json | jq -r '.[0].kubeconfig' | base64 --decode > "${{ env.TERRAFORM_PATH }}/kubeconfig"
 
       - name: Run Terraform Deployment
-        uses: ./github-actions/actions/terraformg
+        uses: ./github-actions/actions/terraform
         with:
           environment: ${{ env.ENVIRONMENT }}
           working_dir: ${{ env.TERRAFORM_PATH }}
