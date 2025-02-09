@@ -30,6 +30,7 @@ jobs:
           repository: camservo-org/github-actions
           ref: dev
           token: ${{ secrets.GHA_TOKEN }}
+          persist-credentials: false
 
       - name: Install the Linode CLI
         uses: linode/action-linode-cli@v1
