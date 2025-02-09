@@ -39,6 +39,7 @@ jobs:
 
       - name: Generate the kubeconfig file
         run: |
+          touch "${{ env.TERRAFORM_PATH }}/kubeconfig"
           linode-cli lke kubeconfig-view 201873 --json | jq -r '.[0].kubeconfig' | base64 --decode > "${{ env.TERRAFORM_PATH }}/kubeconfig"
 
       - name: Run Terraform Deployment
