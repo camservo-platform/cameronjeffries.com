@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - dev
   release:
     types:
       - published
@@ -13,15 +12,21 @@ on:
       apply:
         description: "Apply Terraform changes?"
         required: false
-        default: false
+        default: "false"
         type: boolean
+      environment:
+        description: "Select deployment environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
 
 env: 
   TERRAFORM_PATH: terraform/01-kubernetes
   TOFU_VERSION: 1.7
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  ENVIRONMENT: prod
 
 jobs:
   deploy:
@@ -51,13 +56,25 @@ jobs:
           touch "${{ env.TERRAFORM_PATH }}/kubeconfig"
           linode-cli lke kubeconfig-view 201873 --json | jq -r '.[0].kubeconfig' | base64 --decode > "${{ env.TERRAFORM_PATH }}/kubeconfig"
 
-      - name: Set Apply Flag
+      - name: Set Apply Flag and Environment
         run: |
+          # Determine the apply flag
           APPLY_FLAG="false"
-          if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.event.inputs.apply }}" == "true" ]]; then
+          if [[ "${{ github.event_name }}" == "release" || "${{ github.event.inputs.apply }}" == "true" ]]; then
             APPLY_FLAG="true"
           fi
+
+          # Determine the environment
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            ENVIRONMENT="prod"
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            ENVIRONMENT="dev"
+          else
+            ENVIRONMENT="${{ github.event.inputs.environment }}"
+          fi
+
           echo "APPLY=${APPLY_FLAG}" >> $GITHUB_ENV
+          echo "ENVIRONMENT=${ENVIRONMENT}" >> $GITHUB_ENV
         shell: bash
 
       - name: Run Terraform Deployment
