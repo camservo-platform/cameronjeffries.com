@@ -4,7 +4,7 @@ module "kubernetes" {
   pools = [
     {
       type  = "g6-standard-2"
-      count = 1
+      count = 2
     }
   ]
 }
