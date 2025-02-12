@@ -32,8 +32,12 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  deploy:
+  set-env:
+    uses: camservo-org/github-actions/.github/workflows/set_env.yml@main
+
+  terraform:
     runs-on: ubuntu-latest
+    needs: set-env
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -59,36 +63,12 @@ jobs:
           touch "${{ env.TERRAFORM_PATH }}/kubeconfig"
           linode-cli lke kubeconfig-view 201873 --json | jq -r '.[0].kubeconfig' | base64 --decode > "${{ env.TERRAFORM_PATH }}/kubeconfig"
 
-      - name: Set Apply Flag and Environment
-        run: |
-          # Default apply flag to false
-          APPLY_FLAG="false"
-
-          # Determine environment and apply behavior
-          if [[ "${{ github.event_name }}" == "release" ]]; then
-            ENVIRONMENT="prod"
-            APPLY_FLAG="true"
-          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-            ENVIRONMENT="dev"
-            APPLY_FLAG="true"  # Push to main should apply dev
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            ENVIRONMENT="dev"
-            APPLY_FLAG="false"  # Merge requests should not apply
-          else
-            ENVIRONMENT="${{ github.event.inputs.environment }}"
-            APPLY_FLAG="${{ github.event.inputs.apply }}"
-          fi
-
-          echo "APPLY=${APPLY_FLAG}" >> $GITHUB_ENV
-          echo "ENVIRONMENT=${ENVIRONMENT}" >> $GITHUB_ENV
-        shell: bash
-
       - name: Run Terraform Deployment
         uses: ./github-actions/actions/terraform
         with:
-          environment: ${{ env.ENVIRONMENT }}
+          environment: ${{ needs.set-env.outputs.environment }}
           working_dir: ${{ env.TERRAFORM_PATH }}
-          apply: ${{ env.APPLY }}
+          apply: ${{ needs.set-env.outputs.deploy }}
           tf_vars: |
             {
               "linode_api_key": "${{ secrets.LINODE_API_KEY }}",
