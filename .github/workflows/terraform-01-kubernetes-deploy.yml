@@ -47,7 +47,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: camservo-org/github-actions
-          ref: dev
+          ref: main
           token: ${{ secrets.GHA_TOKEN }}
           persist-credentials: false
           path: github-actions
