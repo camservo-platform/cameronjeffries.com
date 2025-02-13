@@ -3,6 +3,11 @@ resource "kubernetes_namespace" "vault" {
     name = "vault"
   }
 }
+resource "kubernetes_namespace" "vso" {
+  metadata {
+    name = "vault-secrets-operator"
+  }
+}
 resource "helm_release" "vault" {
   name       = "vault"
   namespace  = kubernetes_namespace.vault.id
@@ -14,10 +19,10 @@ resource "helm_release" "vault" {
 }
 ## Haven't gotten this one working yet.
 resource "helm_release" "vault_secrets_operator" {
-  name = "helm-secrets-operator"
-  namespace = kubernetes_namespace.vault.id
+  name       = "helm-secrets-operator"
+  namespace  = kubernetes_namespace.vso.id
   repository = "hashicorp"
-  chart = "vault-secrets-operator"
+  chart      = "vault-secrets-operator"
   values = [
     file("${path.module}/vault-operator-values.yaml")
   ]
@@ -25,7 +30,7 @@ resource "helm_release" "vault_secrets_operator" {
 # helm install vault-secrets-operator hashicorp/vault-secrets-operator -n vault-secrets-operator-system --create-namespace --values vault/vault-operator-values.yaml
 resource "kubernetes_service_account" "vault" {
   metadata {
-    name = "k8s-service-account"
+    name      = "k8s-service-account"
     namespace = "backstage"
   }
 }
