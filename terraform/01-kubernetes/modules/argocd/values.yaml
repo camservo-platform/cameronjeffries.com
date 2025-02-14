@@ -18,6 +18,12 @@ configs:
       clientID: argocd
       enablePKCEAuthentication: true
       requestedScopes: ['openid', 'profile', 'email', 'groups']
+  cmp:
+    plugins:
+      - name: argocd-vault-plugin
+        generate:
+          command: ["argocd-vault-plugin"]
+          args: ["generate", "./"]
 
 server:
   ingress:
