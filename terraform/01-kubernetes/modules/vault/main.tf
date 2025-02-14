@@ -21,7 +21,8 @@ resource "helm_release" "vault" {
 resource "helm_release" "vault_secrets_operator" {
   name       = "helm-secrets-operator"
   namespace  = kubernetes_namespace.vso.id
-  repository = "hashicorp"
+  # repository = "hashicorp"
+  repository = "https://helm.releases.hashicorp.com"
   chart      = "vault-secrets-operator"
   values = [
     file("${path.module}/vault-operator-values.yaml")
