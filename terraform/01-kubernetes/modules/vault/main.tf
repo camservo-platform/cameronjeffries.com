@@ -5,7 +5,7 @@ resource "kubernetes_namespace" "vault" {
 }
 resource "kubernetes_namespace" "vso" {
   metadata {
-    name = "vault-secrets-operator"
+    name = "vault-so"
   }
 }
 resource "helm_release" "vault" {
