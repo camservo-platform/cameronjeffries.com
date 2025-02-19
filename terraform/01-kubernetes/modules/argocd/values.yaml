@@ -18,7 +18,9 @@ configs:
       clientID: argocd
       enablePKCEAuthentication: true
       requestedScopes: ['openid', 'profile', 'email', 'groups']
+
   cmp:
+    create: true
     plugins:
       - name: argocd-vault-plugin
         generate:
@@ -37,3 +39,40 @@ server:
         - argo.fuckamazon.org
         # Based on the ingress controller used secret might be optional
         secretName: argo-fuckamazon-org-tls
+
+repoServer:
+  env:
+    - name: AVP_AUTH_TYPE
+      value: k8s
+    - name: AVP_K8S_ROLE
+      value: ro-secrets
+    - name: AVP_TYPE
+      value: vault
+  initContainers:
+    - name: download-tools
+      image: alpine:3.8
+      command: [sh, -c]
+
+      # Don't forget to update this to whatever the stable release version is
+      # Note the lack of the `v` prefix unlike the git tag
+      env:
+        - name: AVP_VERSION
+          value: "1.16.1"
+      args:
+        - >-
+          wget -O argocd-vault-plugin
+          https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v${AVP_VERSION}/argocd-vault-plugin_${AVP_VERSION}_linux_amd64 &&
+          chmod +x argocd-vault-plugin &&
+          mv argocd-vault-plugin /custom-tools/
+      volumeMounts:
+        - mountPath: /custom-tools
+          name: custom-tools
+
+  volumes:
+    - name: custom-tools
+      emptyDir: {}
+
+  volumeMounts:
+    - name: custom-tools
+      mountPath: /usr/local/bin/argocd-vault-plugin
+      subPath: argocd-vault-plugin
