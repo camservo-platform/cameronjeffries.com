@@ -1,7 +1,7 @@
 ## Keycloak installation pointed out a circular depndency chain that needs to be addressed.
 ## This should be removed and deployed separately in it's own repository.
 locals {
-  plugin_policy = <<EOT
+  vault_plugin_cm      = <<EOT
 apiVersion: argoproj.io/v1alpha1
 kind: ConfigManagementPlugin
 metadata:
@@ -19,6 +19,29 @@ spec:
       - argocd-vault-plugin
       - generate
       - "."
+  lockRepo: false
+EOT
+  vault_helm_plugin_cm = <<EOT
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ConfigManagementPlugin
+metadata:
+  name: argocd-vault-plugin-helm
+spec:
+  allowConcurrency: true
+  discover:
+    find:
+      command:
+        - sh
+        - "-c"
+        - "find . -name 'Chart.yaml' && find . -name 'values.yaml'"
+  generate:
+    command:
+      - sh
+      - "-c"
+      - |
+        helm template $ARGOCD_APP_NAME --include-crds . |
+        argocd-vault-plugin generate -
   lockRepo: false
 EOT
 }
@@ -46,6 +69,7 @@ resource "kubernetes_config_map" "plugins" {
   }
 
   data = {
-    "avp.yaml" = local.plugin_policy
+    "avp.yaml"      = local.vault_plugin_cm,
+    "avp-helm.yaml" = local.vault_helm_plugin_cm
   }
 }
