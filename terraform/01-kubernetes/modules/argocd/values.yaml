@@ -17,6 +17,7 @@ configs:
       clientID: argocd
       enablePKCEAuthentication: true
       requestedScopes: ['openid', 'profile', 'email', 'groups']
+
   cmp:
     create: true
     plugins:
@@ -151,3 +152,8 @@ repoServer:
       name: cmp-plugin
     - name: custom-tools
       emptyDir: {}
+  volumeMounts:
+    - name: custom-tools
+      mountPath: /usr/local/bin/argocd-vault-plugin
+      subPath: argocd-vault-plugin
+
