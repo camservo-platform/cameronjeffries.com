@@ -13,19 +13,19 @@ server:
     annotations:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
     hosts:
-    - backend:
-        port:
-          name: 80
-        service:
-          name: vault-ui
-      host: test-vault.fuckamazon.org
-      pathType: ImplementationSpecific
-      paths:
-      - /
+      - backend:
+          port:
+            name: 80
+          service:
+            name: vault-ui
+        host: test-vault.fuckamazon.org
+        pathType: ImplementationSpecific
+        paths:
+          - /
     ingressClassName: nginx
     tls:
-    - secretName: nginx-test-vault-fuckamazon-org-tls
-      hosts:
-      - test-vault.fuckamazon.org
+      - secretName: nginx-test-vault-fuckamazon-org-tls
+        hosts:
+          - test-vault.fuckamazon.org
 ui:
   enabled: true

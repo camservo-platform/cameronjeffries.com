@@ -1,5 +1,5 @@
 ServerFiles:
- scrape_configs:
-     - job_name: prometheus
-       static_configs:
-         - targets: ['api.fuckamazon.org/docs']
+  scrape_configs:
+    - job_name: prometheus
+      static_configs:
+        - targets: ['api.fuckamazon.org/docs']
