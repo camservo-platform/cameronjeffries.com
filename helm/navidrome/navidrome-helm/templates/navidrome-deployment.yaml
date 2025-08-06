@@ -9,6 +9,8 @@ metadata:
   name: navidrome
 spec:
   replicas: 1
+  nodeSelector:
+    kubernetes.io/hostname: pi-cluster-02
   selector:
     matchLabels:
       io.kompose.service: navidrome
@@ -43,10 +45,10 @@ spec:
             - name: ND_UIWELCOMEMESSAGE
               value: What's up buttfaces?
             - name: ND_MUSICFOLDER
-              value: /data/music
+              value: /music
             - name: ND_DATAFOLDER
-              value: /data/data
-          image: deluan/navidrome:0.54.4
+              value: /data
+          image: deluan/navidrome:0.58.0
           name: navidrome
           ports:
             - containerPort: 4533
@@ -54,11 +56,17 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: navidrome-data
+            - mountPath: /music/bunnywhiskers
+              name: bunnywhiskers
       restartPolicy: Always
       volumes:
         - name: navidrome-data
-          persistentVolumeClaim:
-            claimName: navidrome-data
-        - name: secret-volume
-          secret:
-            secretName: navidrome
+          nfs:
+            server: pi-nas.local
+            path: /navidrome-data
+            readOnly: false
+        - name: bunnywhiskers
+          nfs:
+            server: pi-nas.local
+            path: /bunnywhiskers
+            readOnly: true

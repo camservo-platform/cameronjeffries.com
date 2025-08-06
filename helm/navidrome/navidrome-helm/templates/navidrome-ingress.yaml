@@ -2,22 +2,24 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    cert-manager.io/issuer: letsencrypt-prod
-  name: cert-manager-test
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    external-dns.alpha.kubernetes.io/target: 172.236.235.176
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+  name: navidrome
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
-  - host: navidrome.fuckamazon.org
-    http:
-      paths:
-      - backend:
-          service:
-            name: navidrome
-            port:
-              number: 4533
-        path: /navidrome
-        pathType: ImplementationSpecific
+    - host: navidrome.fuckamazon.org
+      http:
+        paths:
+          - backend:
+              service:
+                name: navidrome
+                port:
+                  number: 4533
+            path: /
+            pathType: ImplementationSpecific
   tls:
-  - hosts:
-    - navidrome.fuckamazon.org
-    secretName: navidrome-fuckamazon-org-tls
+    - hosts:
+        - navidrome.fuckamazon.org
+      secretName: navidrome-fuckamazon-org-tls

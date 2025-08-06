@@ -53,16 +53,16 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     # This is required for using IP forwarding, since this helm chart doesn't support ExternalIp argument, per the documentation.
-    external-dns.alpha.kubernetes.io/target: "136.24.193.11"
+    external-dns.alpha.kubernetes.io/target: "172.236.235.176"
   hosts:
-    - host: traefik.fuckamazon.org
+    - host: proxy-test.fuckamazon.org
       paths:
         - path: /
           pathType: Prefix
   tls:
-    - secretName: traefik-fuckamazon-org-tls
+    - secretName: proxy-test-fuckamazon-org-tls
       hosts:
-        - traefik.fuckamazon.org
+        - proxy-test.fuckamazon.org
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
