@@ -56,8 +56,10 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: navidrome-data
-            - mountPath: /music/bunnywhiskers
+            - mountPath: /libraries/bunnywhiskers
               name: bunnywhiskers
+            - mountPath: /music
+              name: music
       restartPolicy: Always
       volumes:
         - name: navidrome-data
@@ -69,4 +71,9 @@ spec:
           nfs:
             server: pi-nas.local
             path: /bunnywhiskers
+            readOnly: true
+        - name: music
+          nfs:
+            server: pi-nas.local
+            path: /music
             readOnly: true
