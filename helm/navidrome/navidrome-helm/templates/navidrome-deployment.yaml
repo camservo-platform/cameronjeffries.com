@@ -9,8 +9,6 @@ metadata:
   name: navidrome
 spec:
   replicas: 1
-  nodeSelector:
-    kubernetes.io/hostname: pi-cluster-02
   selector:
     matchLabels:
       io.kompose.service: navidrome
@@ -21,9 +19,13 @@ spec:
       annotations:
         kompose.cmd: kompose convert -c
         kompose.version: 1.34.0 (HEAD)
+        checksum/config: {{ include (print $.Template.BasePath "/navidrome-configmap.yaml") . | sha256sum }}
       labels:
         io.kompose.service: navidrome
     spec:
+      # The USB DAC used for jukebox mode is plugged into this node.
+      nodeSelector:
+        audio: usb-dac
       containers:
         - env:
             - name: ND_BASEURL
@@ -48,11 +50,17 @@ spec:
               value: /music
             - name: ND_DATAFOLDER
               value: /data
+            - name: ND_CONFIGFILE
+              value: /config/navidrome.toml
           image: deluan/navidrome:0.58.5
           name: navidrome
           ports:
             - containerPort: 4533
               protocol: TCP
+          # The USB DAC's /dev/snd, exposed by generic-device-plugin.
+          resources:
+            limits:
+              devic.es/audio: 1
           volumeMounts:
             - mountPath: /data
               name: navidrome-data
@@ -60,6 +68,9 @@ spec:
               name: bunnywhiskers
             - mountPath: /music
               name: music
+            - mountPath: /config
+              name: config
+              readOnly: true
       restartPolicy: Always
       volumes:
         - name: navidrome-data
@@ -77,3 +88,6 @@ spec:
             server: pi-nas.local
             path: /music
             readOnly: true
+        - name: config
+          configMap:
+            name: navidrome-config
