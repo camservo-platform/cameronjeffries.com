@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    io.kompose.service: navidrome
+  name: navidrome-config
+data:
+  navidrome.toml: |
+    [Jukebox]
+    Enabled = true
+    AdminOnly = true
+    # Address the DAC by ALSA card name; card numbers can change across reboots.
+    Devices = [["usb-dac", "alsa/hw:CARD=I20,DEV=0"]]
+    Default = "usb-dac"
